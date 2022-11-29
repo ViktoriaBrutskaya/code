@@ -13,12 +13,13 @@ width = 20
 height = 30
 x = random.randrange(0,win_width - width,1)
 y=random.randrange(0,win_height - height,1)
-speed = 0.5
+speed = 0.8
 run = True
 
 bg = pygame.image.load('images/фон.jpg')
 snowman = pygame.image.load('images/снеговик175.png')
-snowflake = pygame.image.load('images/')
+
+
 
 def drawWindow():
     win.blit(bg, (0,0))
