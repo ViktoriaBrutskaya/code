@@ -1,12 +1,16 @@
 import pygame
 import random
 
+
 pygame.init()
 
 win_height = 750
 win_width = 1300
 win = pygame.display.set_mode((win_width,win_height))
 pygame.display.set_caption("Swowmen Fight")
+
+pygame.mixer.music.load("music/Dean Martin - Let It Snow (minus).mp3")
+pygame.mixer.music.set_volume(0.4)
 
 score = 0
 width = 145
@@ -31,6 +35,7 @@ def drawWindow():
 
 while run:
     pygame.time.delay(10)
+    pygame.mixer.music.play(-1)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -45,4 +50,7 @@ while run:
     if keys[pygame.K_DOWN] and y<750 - height:
         y +=speed
     drawWindow()
+
 pygame.quit()
+
+
