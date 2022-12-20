@@ -11,6 +11,7 @@ pygame.display.set_caption("Swowmen Fight")
 
 pygame.mixer.music.load("music/Dean Martin - Let It Snow (minus).mp3")
 pygame.mixer.music.set_volume(0.4)
+
 pygame.mixer.music.play(-1)
 
 text = "Rools of game"
@@ -59,6 +60,9 @@ bad_snowman_y = random.randrange(0,win_height - height,1)
 font_name = pygame.font.match_font('arial')
 
 
+
+
+
 bg = pygame.image.load('images/фон.jpg')
 snowman = pygame.image.load('images/снеговик175.png')
 snowflake = pygame.image.load('images/снежинка100.png')
@@ -98,9 +102,10 @@ def drawWindow():
     draw_text(win, str(bad_snowman_score), 14, bad_snowman_x+width/2, bad_snowman_y+height)
     pygame.display.update()
 
-
+pygame.mixer.music.play(-1)
 while run:
     pygame.time.delay(10)
+
 
     current_time = pygame.time.get_ticks()
 
