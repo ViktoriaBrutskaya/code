@@ -6,15 +6,40 @@ pygame.init()
 
 win_height = 750
 win_width = 1300
-win = pygame.display.set_mode((win_width,win_height))
+win = pygame.display.set_mode((win_width,win_height))#создание дисплея определенной ширины и длины
 pygame.display.set_caption("Swowmen Fight")
 
-pygame.mixer.music.load("music/Dean Martin - Let It Snow (minus).mp3")
-pygame.mixer.music.set_volume(0.4)
 
-pygame.mixer.music.play(-1)
+def show_menu():
+    menu_back=pygame.image.load('images/menu.jpg')
+    start_but = Button(370,90)
+    quit_but=Button(210,90)
+    show= True;
 
-text = "Rools of game"
+    while show:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+        win.blit(menu_back,(0,0))
+        start_but.draw_but(470,310,'Start game!',None,50)
+        quit_but.draw_but(550, 415, 'Quit', quit, 50)
+
+        pygame.display.update()
+        clock.tick(50)
+
+def print_menu(message,x,y, font_color=(255,255,255), font_type='nexa-script-heavy.ttf',font_size=30):
+    font_type=pygame.font.Font(font_type,font_size)
+    text=font_type.render(message,True,font_color)
+    win.blit(text,(x,y))
+
+#def start_game() должен быть написан цикл который запускает игру засунуть вместо None эту функцию
+
+#pygame.mixer.music.load("music/Dean Martin - Let It Snow (minus).mp3")
+#pygame.mixer.music.set_volume(0.4)
+
+#pygame.mixer.music.play(-1)
+
 
 clock = pygame.time.Clock()
 current_time = 0
@@ -31,19 +56,21 @@ bonus = 0
 score = 0
 bad_snowman_score = 150
 speed = 1.5
-speed_flag = 1.5
+speed_flag = 1.5#возращаем скорость снеговика после сбора носка
 
 run = True
 show_bonus = False
 
 width = 145
 height = 158
+#width1=150
+#height=150
 snowflake_height = 100
 snowflake_width = 100
 booster_width = 110
 booster_height = 110
 
-x = random.randrange(0,win_width - width,1)
+x = random.randrange(0,win_width - width,1)#создание рандомной координаты x для снеговика(начало,конец,ширина(диапазон))
 y=random.randrange(0,win_height - height,1)
 snowflake_x = random.randrange(0,win_width - snowflake_width,1)
 snowflake_y=random.randrange(0,win_height - snowflake_height,1)
@@ -55,11 +82,11 @@ gift_x = random.randrange(0,win_width - booster_width,1)
 gift_y=random.randrange(0,win_height - booster_height,1)
 bad_snowman_x = random.randrange(0,win_width - width,1)
 bad_snowman_y = random.randrange(0,win_height - height,1)
+#bad_snowman_x = random.randrange(0,win_width - width1,1)
+#bad_snowman_y = random.randrange(0,win_height - height1,1)
 
 
-font_name = pygame.font.match_font('arial')
-
-
+font_name = pygame.font.match_font('intro')
 
 
 
@@ -71,16 +98,17 @@ gift = pygame.image.load('images/подарок110.png')
 candy = pygame.image.load('images/леденец110.png')
 bad_snowman = pygame.image.load('images/снеговикплохой180.png')
 
-def draw_text(surf, text, size, x, y):
-    font = pygame.font.Font(font_name, size)
+def draw_text(surf, text, size, x, y):#отрисовка текста счетчиков
+    font = pygame.font.Font(font_name, 23)
     text_surface = font.render(text, True,(0,0,0))
     text_rect = text_surface.get_rect()
-    text_rect.midtop = (x, y)
+    text_rect.midtop = (x+10, y)
     surf.blit(text_surface, text_rect)
 
 def draw_snowflake():
     pygame.time.set_timer(event,150000)
     win.blit(snowflake,(random.randrange(0,win_width - width,1),random.randrange(0,win_height - height,1)))
+    #рандомный координаты x и y для снежинки
 
 def is_taken(x,y,w,h,x1,y1,w1,h1):
 
@@ -101,11 +129,36 @@ def drawWindow():
     win.blit(bad_snowman,(bad_snowman_x,bad_snowman_y))
     draw_text(win, str(bad_snowman_score), 14, bad_snowman_x+width/2, bad_snowman_y+height)
     pygame.display.update()
+class Button:
+    def __init__(self,width,heigth):
+        self.width=width
+        self.heigth = heigth
+        self.interactive_color = (255,146,1)
+        self.active_color = (0, 47, 56)
 
-pygame.mixer.music.play(-1)
+    def draw_but(self,x,y,message,action=None,font_size=30):
+        mouse=pygame.mouse.get_pos()
+        click=pygame.mouse.get_pressed()
+
+        if x<mouse[0]<x+self.width and y < mouse[1] < y + self.heigth:
+            pygame.draw.rect(win,self.interactive_color,(x,y,self.width,self.heigth))
+
+            if click[0]==1:
+                if action==quit:
+                    pygame.quit()
+                    quit()
+
+
+        else:
+            pygame.draw.rect(win, self.active_color, (x, y, self.width, self.heigth))
+        print_menu(message=message,x=x+40,y=y+10,font_size=font_size)
+
+
+#pygame.mixer.music.play(-1)
 while run:
+    button=Button(100,50)
     pygame.time.delay(10)
-
+    show_menu()
 
     current_time = pygame.time.get_ticks()
 
@@ -174,5 +227,6 @@ while run:
         y +=speed
 
     drawWindow()
+
 
 pygame.quit()
