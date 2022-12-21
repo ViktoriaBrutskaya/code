@@ -10,35 +10,12 @@ win = pygame.display.set_mode((win_width,win_height))#создание дисп�
 pygame.display.set_caption("Swowmen Fight")
 
 
-def show_menu():
-    menu_back=pygame.image.load('images/menu.jpg')
-    start_but = Button(370,90)
-    quit_but=Button(210,90)
-    show= True;
-
-    while show:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
-        win.blit(menu_back,(0,0))
-        start_but.draw_but(470,310,'Start game!',None,50)
-        quit_but.draw_but(550, 415, 'Quit', quit, 50)
-
-        pygame.display.update()
-        clock.tick(50)
-
-def print_menu(message,x,y, font_color=(255,255,255), font_type='nexa-script-heavy.ttf',font_size=30):
-    font_type=pygame.font.Font(font_type,font_size)
-    text=font_type.render(message,True,font_color)
-    win.blit(text,(x,y))
-
 #def start_game() должен быть написан цикл который запускает игру засунуть вместо None эту функцию
 
-#pygame.mixer.music.load("music/Dean Martin - Let It Snow (minus).mp3")
-#pygame.mixer.music.set_volume(0.4)
+pygame.mixer.music.load("music/Dean Martin - Let It Snow (minus).mp3")
+pygame.mixer.music.set_volume(0.4)
 
-#pygame.mixer.music.play(-1)
+pygame.mixer.music.play(-1)
 
 
 clock = pygame.time.Clock()
@@ -129,6 +106,113 @@ def drawWindow():
     win.blit(bad_snowman,(bad_snowman_x,bad_snowman_y))
     draw_text(win, str(bad_snowman_score), 14, bad_snowman_x+width/2, bad_snowman_y+height)
     pygame.display.update()
+
+
+
+
+
+def start_game():
+    global run,x,y,width,height,snowflake_x,snowflake_y,snowflake_widthsnowflake_height
+    global score,sock_x,sock_y,booster_width,booster_height,sock_getted_time,time_of_take_sock
+    global time_for_random_sock,speed,candy_x,candy_y,gift_y,gift_x,show_bonus_time,current_time
+    global time_of_take_gift,time_for_random_gift,bonus,show_bonus,bad_snowman_x,bad_snowman_y,bad_snowman_score
+    while run:
+
+        pygame.time.delay(10)
+
+
+        current_time = pygame.time.get_ticks()
+
+        if is_taken(x,y,width,height,snowflake_x,snowflake_y,snowflake_width,snowflake_height) == True:
+            score = score +1
+            snowflake_x = random.randrange(0,win_width - snowflake_width,1)
+            snowflake_y = random.randrange(0,win_height - snowflake_height,1)
+
+        if is_taken(x,y,width,height,sock_x,sock_y,booster_width,booster_height) == True:
+            sock_getted_time = pygame.time.get_ticks()
+            time_of_take_sock = pygame.time.get_ticks()
+            time_for_random_sock = random.randrange(5000,150000,500)
+            speed = 4
+            sock_x = -200
+            sock_y = -200
+
+        if is_taken(x,y,width,height,candy_x,candy_y,booster_width,booster_height) == True:
+            candy_x = random.randrange(0,win_width - booster_width,1)
+            candy_y = random.randrange(0,win_height - booster_height,1)
+
+        if is_taken(x,y,width,height,gift_x,gift_y,booster_width,booster_height) == True:
+            show_bonus_time = pygame.time.get_ticks()
+            time_of_take_gift = pygame.time.get_ticks()
+            time_for_random_gift = random.randrange(5000,150000,500)
+            bonus = random.randrange(1,10,1)
+            show_bonus = True
+            score = score + bonus
+            gift_x = -200
+            gift_y = -200
+
+        if is_taken(x,y,width,height,bad_snowman_x,bad_snowman_y,width,height) == True:
+            if bad_snowman_score > score:
+                run = False
+
+        if current_time - sock_getted_time >5000:
+            speed = speed_flag
+
+        if current_time - show_bonus_time > 2000:
+            show_bonus = False
+
+        if show_bonus == True:
+            draw_text(win, str(bonus), 80, 700, 300)
+
+        if current_time - time_of_take_gift > time_for_random_gift:
+            gift_x = random.randrange(0,win_width - booster_width,1)
+            gift_y = random.randrange(0,win_height - booster_height,1)
+
+        if current_time - time_of_take_sock > time_for_random_sock:
+            sock_x = random.randrange(0,win_width - booster_width,1)
+            sock_y = random.randrange(0,win_height - booster_height,1)
+
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+
+
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_LEFT] and x>0-25:
+            x -=speed
+        if keys[pygame.K_RIGHT]and x<1300 - width:
+            x +=speed
+        if keys[pygame.K_UP] and y>0-22:
+            y =y -speed
+        if keys[pygame.K_DOWN] and y<750 - height:
+            y +=speed
+
+        drawWindow()
+
+def show_menu():
+    menu_back=pygame.image.load('images/menu.jpg')
+    start_but = Button(370,90)
+    quit_but=Button(210,90)
+    show= True;
+
+    while show:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+        win.blit(menu_back,(0,0))
+        start_but.draw_but(470,310,'Start game!',start_game,50)
+        quit_but.draw_but(550, 415, 'Quit', quit, 50)
+
+        pygame.display.update()
+        clock.tick(50)
+
+def print_menu(message,x,y, font_color=(255,255,255), font_type='nexa-script-heavy.ttf',font_size=30):
+    font_type=pygame.font.Font(font_type,font_size)
+    text=font_type.render(message,True,font_color)
+    win.blit(text,(x,y))
+
+
 class Button:
     def __init__(self,width,heigth):
         self.width=width
@@ -147,6 +231,8 @@ class Button:
                 if action==quit:
                     pygame.quit()
                     quit()
+                if action ==start_game:
+                    start_game()
 
 
         else:
@@ -154,79 +240,5 @@ class Button:
         print_menu(message=message,x=x+40,y=y+10,font_size=font_size)
 
 
-#pygame.mixer.music.play(-1)
-while run:
-    button=Button(100,50)
-    pygame.time.delay(10)
-    show_menu()
-
-    current_time = pygame.time.get_ticks()
-
-    if is_taken(x,y,width,height,snowflake_x,snowflake_y,snowflake_width,snowflake_height) == True:
-        score = score +1
-        snowflake_x = random.randrange(0,win_width - snowflake_width,1)
-        snowflake_y = random.randrange(0,win_height - snowflake_height,1)
-
-    if is_taken(x,y,width,height,sock_x,sock_y,booster_width,booster_height) == True:
-        sock_getted_time = pygame.time.get_ticks()
-        time_of_take_sock = pygame.time.get_ticks()
-        time_for_random_sock = random.randrange(5000,150000,500)
-        speed = 4
-        sock_x = -200
-        sock_y = -200
-
-    if is_taken(x,y,width,height,candy_x,candy_y,booster_width,booster_height) == True:
-        candy_x = random.randrange(0,win_width - booster_width,1)
-        candy_y = random.randrange(0,win_height - booster_height,1)
-
-    if is_taken(x,y,width,height,gift_x,gift_y,booster_width,booster_height) == True:
-        show_bonus_time = pygame.time.get_ticks()
-        time_of_take_gift = pygame.time.get_ticks()
-        time_for_random_gift = random.randrange(5000,150000,500)
-        bonus = random.randrange(1,10,1)
-        show_bonus = True
-        score = score + bonus
-        gift_x = -200
-        gift_y = -200
-
-    if is_taken(x,y,width,height,bad_snowman_x,bad_snowman_y,width,height) == True:
-        if bad_snowman_score > score:
-            run = False
-
-    if current_time - sock_getted_time >5000:
-        speed = speed_flag
-
-    if current_time - show_bonus_time > 2000:
-        show_bonus = False
-
-    if show_bonus == True:
-        draw_text(win, str(bonus), 80, 700, 300)
-
-    if current_time - time_of_take_gift > time_for_random_gift:
-        gift_x = random.randrange(0,win_width - booster_width,1)
-        gift_y = random.randrange(0,win_height - booster_height,1)
-
-    if current_time - time_of_take_sock > time_for_random_sock:
-        sock_x = random.randrange(0,win_width - booster_width,1)
-        sock_y = random.randrange(0,win_height - booster_height,1)
-
-
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            run = False
-
-
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_LEFT] and x>0-25:
-        x -=speed
-    if keys[pygame.K_RIGHT]and x<1300 - width:
-        x +=speed
-    if keys[pygame.K_UP] and y>0-22:
-        y =y -speed
-    if keys[pygame.K_DOWN] and y<750 - height:
-        y +=speed
-
-    drawWindow()
-
-
+show_menu()
 pygame.quit()
