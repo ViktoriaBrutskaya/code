@@ -6,9 +6,9 @@ win_width = 1300
 win = pygame.display.set_mode((win_width,win_height))#создание дисплея определенной ширины и длины
 pygame.display.set_caption("Swowman Fight")
 
-#pygame.mixer.music.load("music/Dean Martin - Let It Snow (minus).mp3")
-#pygame.mixer.music.set_volume(0.4)
-#pygame.mixer.music.play(-1)
+pygame.mixer.music.load("music/Dean Martin - Let It Snow (minus).mp3")
+pygame.mixer.music.set_volume(0.4)
+pygame.mixer.music.play(-1)
 
 
 clock = pygame.time.Clock()#для отслеживания времени
@@ -19,7 +19,7 @@ take_snowflake_time = 0
 
 bonus = 0
 score = 0
-final_score = 1000
+final_score = 500
 bad_snowman_score = 50
 speed = 1.5
 speed_flag = 1.5#возращаем скорость снеговика после сбора носка
@@ -30,7 +30,8 @@ bad_end_eaten = False
 bad_end_melted = False
 good_end = False
 show = True
-
+set_restart = False
+show_rules_time = True
 
 width = 145
 height = 158
@@ -68,6 +69,8 @@ sock = pygame.image.load('images/носок110.png')
 gift = pygame.image.load('images/подарок110.png')
 candy = pygame.image.load('images/леденец110.png')
 bad_snowman = pygame.image.load('images/снеговикплохой180.png')
+
+
 def draw_counter(surf, text,size, x, y,font_type='nexa-script-heavy.ttf'):#отрисовка текста счетчиков
     font = pygame.font.Font(font_type,20)
     text_surface = font.render(text, True,(0,0,0))
@@ -83,6 +86,8 @@ def is_taken(x,y,w,h,x1,y1,w1,h1):
             return True
     else:
         return False
+
+
 def drawWindow():
     win.blit(bg, (0,0))#наложение на основной дисплей фона(коордтнаты от угла 0,0)
     win.blit(snowman, (x,y))
@@ -101,15 +106,30 @@ def start_game():#запуск игры
     #переменные значение которых можно отределить из любого места в коде
     global run,x,y,width,height,snowflake_x,snowflake_y,snowflake_widthsnowflake_height, bad_snowman_width
     global score,sock_x,sock_y,booster_width,booster_height,sock_getted_time, bad_snowman_height, bad_end_eaten, bad_end_melted, good_end
-    global speed,gift_y,gift_x,show_bonus_time,current_time, take_snowflake_time, show
+    global speed,gift_y,gift_x,show_bonus_time,current_time, take_snowflake_time, show, set_restart, show_rules_time
     global bonus,show_bonus,bad_snowman_x,bad_snowman_y,bad_snowman_score,snowflake_x1,snowflake_y1,snowflake_x2,snowflake_y2
+    if set_restart:
+        run = True
+        show_end = False
+        show_rules_time = False
+        score = 0
+        bad_snowman_score = 50
+        bad_end_eaten = False
+        bad_end_melted = False
+        good_end = False
+        take_snowflake_time = pygame.time.get_ticks()
+        x = random.randrange(0,win_width - width,1)#создание рандомной координаты x для снеговика(начало,конец,ширина(диапазон))
+        y=random.randrange(0,win_height - height,1)
+        bad_snowman_x = random.randrange(0,win_width - bad_snowman_width,1)
+        bad_snowman_y = random.randrange(0,win_height - bad_snowman_height,1)
+
     while run:
 
         pygame.time.delay(10)
 
-
         current_time = pygame.time.get_ticks()#сколько прошло миллисек с начала
         if final_score == score:
+            show_rules_time = False
             good_end = True
             show = False
             run = False
@@ -138,17 +158,18 @@ def start_game():#запуск игры
         if is_taken(x,y,width,height,gift_x,gift_y,booster_width,booster_height) == True:
             show_bonus_time = pygame.time.get_ticks()
             bonus = random.randrange(1,10,1)
-            #show_bonus = True
+            show_bonus = True
             score = score + bonus
             gift_x = random.randrange(0,win_width - booster_width,1)
             gift_y = random.randrange(0,win_height - booster_height,1)
 
         if is_taken(x,y,width,height,bad_snowman_x,bad_snowman_y,bad_snowman_width,bad_snowman_height) == True:
-            if bad_snowman_score >= score:
+            if bad_snowman_score > score:
+                show_rules_time = False
                 bad_end_eaten = True
                 show = False
                 run = False
-            elif bad_snowman_score < score:
+            elif bad_snowman_score <= score:
                 score += bad_snowman_score
                 bad_snowman_x = random.randrange(0,win_width - bad_snowman_width,1)
                 bad_snowman_y = random.randrange(0,win_height - bad_snowman_height,1)
@@ -157,13 +178,18 @@ def start_game():#запуск игры
         if current_time - sock_getted_time >3000:
             speed = speed_flag
         if current_time - take_snowflake_time >15000:
+            show_rules_time = False
             bad_end_melted = True
             show = False
             run = False
-        #if show_bonus == True:
-            #draw_counter(win, str(bonus), 80, 700, 300)
+
+        if show_bonus == True:
+            draw_counter(win, str(bonus), 80, 700, 300)
+
         for event in pygame.event.get():#выход из игры
             if event.type == pygame.QUIT:
+                show_end = False
+                show = False
                 run = False
 
         keys = pygame.key.get_pressed()
@@ -178,8 +204,13 @@ def start_game():#запуск игры
 
         drawWindow()
 
+def restart():
+    global set_restart
+    set_restart = True
+    start_game()
+
 def show_rules():
-    show_rules_time = True
+    global show_rules_time
     rools_back = pygame.image.load('images/rules.jpg')
     back_but=Button(182,70)
 
@@ -192,17 +223,7 @@ def show_rules():
         back_but.draw_but(90,100,'Back',show_menu,50)
         pygame.display.update()
         clock.tick(50)
-def restart():
-        score = 0
-        bad_snowman_score = 50
-        bad_end_eaten = False
-        bad_end_melted = False
-        good_end = False
-        take_snowflake_time = 0
-        x = random.randrange(0,win_width - width,1)
-        y=random.randrange(0,win_height - height,1)
-        bad_snowman_x = random.randrange(0,win_width - bad_snowman_width,1)
-        bad_snowman_y = random.randrange(0,win_height - bad_snowman_height,1)
+
 
 font_name = pygame.font.match_font('nexa-script-heavy.ttf')
 def print_the_bad_end(message,x,y, font_color=(255,255,255), font_type='nexa-script-heavy.ttf',font_size=75):#отрисовка плохого конца
@@ -214,6 +235,8 @@ def print_the_good_end(message,x,y, font_color=(255,255,255), font_type='nexa-sc
     text = font_type.render(message, True, font_color, (254,144,0))
     win.blit(text, (x, y))
 def end_of_the_game():
+    global show_rules_time
+    show_rules_time = False
     back = pygame.image.load('images/menu.jpg')
     show_end = True
     restart_but = Button(250,90)
@@ -235,7 +258,9 @@ def end_of_the_game():
             back = pygame.image.load('images/badend.jpg')
         elif good_end:
             print_the_good_end('You win!',455, 320)
-
+        else:
+            pygame.quit()
+            quit()
         pygame.display.update()
         clock.tick(50)
 
@@ -282,11 +307,10 @@ class Button:
                 if action == show_rules:
                     show_rules()
                 if action == show_menu:
-                    #show_rules_time = False
+                    show_rules_time = False
                     show_menu()
                 if action == restart:
                     restart()
-                    start_game()
 
         else:
             pygame.draw.rect(win, self.active_color, (x, y, self.width, self.heigth))#верхний левый угол, ширина и высота
@@ -295,5 +319,8 @@ class Button:
 
 show_menu()
 show = False
+print(show_rules_time)
+show_rules_time = False
 end_of_the_game()
+show_end = False
 pygame.quit()
