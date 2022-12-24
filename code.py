@@ -1,23 +1,17 @@
 import pygame
 import random
-
-
 pygame.init()
-
 win_height = 750
 win_width = 1300
 win = pygame.display.set_mode((win_width,win_height))#создание дисплея определенной ширины и длины
-pygame.display.set_caption("Swowmen Fight")
+pygame.display.set_caption("Swowman Fight")
+
+#pygame.mixer.music.load("music/Dean Martin - Let It Snow (minus).mp3")
+#pygame.mixer.music.set_volume(0.4)
+#pygame.mixer.music.play(-1)
 
 
-#def start_game() должен быть написан цикл который запускает игру засунуть вместо None эту функцию
-
-pygame.mixer.music.load("music/Dean Martin - Let It Snow (minus).mp3")
-pygame.mixer.music.set_volume(0.4)
-pygame.mixer.music.play(-1)
-
-
-clock = pygame.time.Clock()
+clock = pygame.time.Clock()#для отслеживания времени
 current_time = 0
 sock_getted_time = 0
 show_bonus_time = 0
@@ -37,16 +31,11 @@ bad_end_melted = False
 good_end = False
 show = True
 
-bad_end_eaten_message = 'You was eaten'
-bad_end_melted = 'You was melted'
-good_end_message = 'You win'
 
 width = 145
 height = 158
 bad_snowman_width = 140
 bad_snowman_height = 150
-#width1=150
-#height=150
 snowflake_height = 65
 snowflake_width = 65
 booster_width = 110
@@ -68,15 +57,9 @@ gift_x = random.randrange(0,win_width - booster_width,1)
 gift_y=random.randrange(0,win_height - booster_height,1)
 bad_snowman_x = random.randrange(0,win_width - bad_snowman_width,1)
 bad_snowman_y = random.randrange(0,win_height - bad_snowman_height,1)
-#bad_snowman_x = random.randrange(0,win_width - width1,1)
-#bad_snowman_y = random.randrange(0,win_height - height1,1)
 
 
-font_name = pygame.font.match_font('intro')
-
-
-
-bg = pygame.image.load('images/фон.jpg')
+bg = pygame.image.load('images/фон3.jpg')
 snowman = pygame.image.load('images/снеговик175.png')
 snowflake = pygame.image.load('images/снежинка65.png')
 snowflake1 = pygame.image.load('images/снежинка65.png')
@@ -85,40 +68,37 @@ sock = pygame.image.load('images/носок110.png')
 gift = pygame.image.load('images/подарок110.png')
 candy = pygame.image.load('images/леденец110.png')
 bad_snowman = pygame.image.load('images/снеговикплохой180.png')
-
-def draw_text(surf, text, size, x, y):#отрисовка текста счетчиков
-    font = pygame.font.Font(font_name, 23)
+def draw_counter(surf, text,size, x, y,font_type='nexa-script-heavy.ttf'):#отрисовка текста счетчиков
+    font = pygame.font.Font(font_type,20)
     text_surface = font.render(text, True,(0,0,0))
     text_rect = text_surface.get_rect()
     text_rect.midtop = (x+10, y)
     surf.blit(text_surface, text_rect)
 
+
 def is_taken(x,y,w,h,x1,y1,w1,h1):
 
-    if x<x1<x+w or x<x1+w1<x+w:
+    if x<x1<x+w or x<x1+w1<x+w: #берется если находиться в следующем диапазоне
         if y<y1<y+h or y<y1+h1<y+h:
             return True
     else:
         return False
-
 def drawWindow():
-    win.blit(bg, (0,0))
+    win.blit(bg, (0,0))#наложение на основной дисплей фона(коордтнаты от угла 0,0)
     win.blit(snowman, (x,y))
-    draw_text(win, str(score), 14, x+width/2, y+height)
+    draw_counter(win, str(score),14, x+width/2, y+height)
     win.blit(sock,(sock_x,sock_y))
     win.blit(gift,(gift_x,gift_y))
     win.blit(snowflake,(snowflake_x,snowflake_y))
     win.blit(snowflake1,(snowflake_x1,snowflake_y1))
     win.blit(snowflake2,(snowflake_x2,snowflake_y2))
     win.blit(bad_snowman,(bad_snowman_x,bad_snowman_y))
-    draw_text(win, str(bad_snowman_score), 14, bad_snowman_x+width/2, bad_snowman_y+height)
-    pygame.display.update()
+    draw_counter(win, str(bad_snowman_score), 14, bad_snowman_x+width/2, bad_snowman_y+height)
+    pygame.display.update()#обновление, перерисовка цвета пикселей
 
 
-
-
-
-def start_game():
+def start_game():#запуск игры
+    #переменные значение которых можно отределить из любого места в коде
     global run,x,y,width,height,snowflake_x,snowflake_y,snowflake_widthsnowflake_height, bad_snowman_width
     global score,sock_x,sock_y,booster_width,booster_height,sock_getted_time, bad_snowman_height, bad_end_eaten, bad_end_melted, good_end
     global speed,gift_y,gift_x,show_bonus_time,current_time, take_snowflake_time, show
@@ -128,8 +108,8 @@ def start_game():
         pygame.time.delay(10)
 
 
-        current_time = pygame.time.get_ticks()
-        if final_score < score:
+        current_time = pygame.time.get_ticks()#сколько прошло миллисек с начала
+        if final_score == score:
             good_end = True
             show = False
             run = False
@@ -158,7 +138,7 @@ def start_game():
         if is_taken(x,y,width,height,gift_x,gift_y,booster_width,booster_height) == True:
             show_bonus_time = pygame.time.get_ticks()
             bonus = random.randrange(1,10,1)
-            show_bonus = True
+            #show_bonus = True
             score = score + bonus
             gift_x = random.randrange(0,win_width - booster_width,1)
             gift_y = random.randrange(0,win_height - booster_height,1)
@@ -180,14 +160,11 @@ def start_game():
             bad_end_melted = True
             show = False
             run = False
-
-
-        if show_bonus == True:
-            draw_text(win, str(bonus), 80, 700, 300)
-        for event in pygame.event.get():
+        #if show_bonus == True:
+            #draw_counter(win, str(bonus), 80, 700, 300)
+        for event in pygame.event.get():#выход из игры
             if event.type == pygame.QUIT:
                 run = False
-
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT] and x>0-25:
@@ -203,8 +180,8 @@ def start_game():
 
 def show_rules():
     show_rules_time = True
-    rools_back = pygame.image.load('images/menu.jpg')
-    back_but=Button(210,90)
+    rools_back = pygame.image.load('images/rules.jpg')
+    back_but=Button(182,70)
 
     while show_rules_time:
         for event in pygame.event.get():
@@ -212,7 +189,7 @@ def show_rules():
                 pygame.quit()
                 quit()
         win.blit(rools_back,(0,0))
-        back_but.draw_but(100,100,'Back',show_menu,50)
+        back_but.draw_but(90,100,'Back',show_menu,50)
         pygame.display.update()
         clock.tick(50)
 def restart():
@@ -227,11 +204,20 @@ def restart():
         bad_snowman_x = random.randrange(0,win_width - bad_snowman_width,1)
         bad_snowman_y = random.randrange(0,win_height - bad_snowman_height,1)
 
+font_name = pygame.font.match_font('nexa-script-heavy.ttf')
+def print_the_bad_end(message,x,y, font_color=(255,255,255), font_type='nexa-script-heavy.ttf',font_size=75):#отрисовка плохого конца
+    font_type = pygame.font.Font(font_type,font_size)
+    text = font_type.render(message, True, font_color, (159,1,52))
+    win.blit(text, (x, y))
+def print_the_good_end(message,x,y, font_color=(255,255,255), font_type='nexa-script-heavy.ttf',font_size=85):#отрисовка хорошего конца
+    font_type = pygame.font.Font(font_type,font_size)
+    text = font_type.render(message, True, font_color, (254,144,0))
+    win.blit(text, (x, y))
 def end_of_the_game():
     back = pygame.image.load('images/menu.jpg')
     show_end = True
-    restart_but = Button(210,90)
-    quit_but=Button(210,90)
+    restart_but = Button(250,90)
+    quit_but=Button(200,80)
 
     while show_end:
         for event in pygame.event.get():
@@ -239,23 +225,25 @@ def end_of_the_game():
                 pygame.quit()
                 quit()
         win.blit(back,(0,0))
-        restart_but.draw_but(100,100,'Restart',restart,50)
-        quit_but.draw_but(520, 520, 'Quit', quit, 50)
+        restart_but.draw_but(526,430,'Restart',restart,50)
+        quit_but.draw_but(80, 80, 'Quit', quit, 50)
         if bad_end_eaten:
-            draw_text(win, bad_end_eaten_message, 20, 50,50)
+            back = pygame.image.load('images/badend.jpg')
+            print_the_bad_end('You was eaten!', 375, 320)
         elif bad_end_melted:
-            draw_text(win, bad_end_melted_message, 20, 50,50)
+            print_the_bad_end('You was melted!',355, 330)
+            back = pygame.image.load('images/badend.jpg')
         elif good_end:
-            draw_text(win, good_end_message, 20, 50,50)
-        
+            print_the_good_end('You win!',455, 320)
+
         pygame.display.update()
         clock.tick(50)
 
 def show_menu():
     menu_back=pygame.image.load('images/menu.jpg')
-    start_but = Button(370,90)
-    quit_but=Button(210,90)
-    rules_but = Button(210,90)
+    start_but = Button(385,90)
+    quit_but=Button(160,90)
+    rules_but = Button(200,90)
 
     while show:
         for event in pygame.event.get():
@@ -263,18 +251,16 @@ def show_menu():
                 pygame.quit()
                 quit()
         win.blit(menu_back,(0,0))
-        start_but.draw_but(450,310,'Start game!',start_game,50)
-        quit_but.draw_but(520, 520, 'Quit', quit, 50)
-        rules_but.draw_but(520, 415, 'Rules', show_rules,50)
+        start_but.draw_but(450,360,'Start game!',start_game,60)
+        quit_but.draw_but(562, 460, 'Quit', quit, 50)
+        rules_but.draw_but(545, 260, 'Rules', show_rules,50)
 
         pygame.display.update()
         clock.tick(50)
-
 def print_menu(message,x,y, font_color=(255,255,255), font_type='nexa-script-heavy.ttf',font_size=30):
     font_type=pygame.font.Font(font_type,font_size)
     text=font_type.render(message,True,font_color)
     win.blit(text,(x,y))
-
 
 class Button:
     def __init__(self,width,heigth):
@@ -282,14 +268,11 @@ class Button:
         self.heigth = heigth
         self.interactive_color = (255,146,1)
         self.active_color = (0, 47, 56)
-
     def draw_but(self,x,y,message,action=None,font_size=30):
         mouse=pygame.mouse.get_pos()
         click=pygame.mouse.get_pressed()
-
         if x<mouse[0]<x+self.width and y < mouse[1] < y + self.heigth:
             pygame.draw.rect(win,self.interactive_color,(x,y,self.width,self.heigth))
-
             if click[0]==1:
                 if action==quit:
                     pygame.quit()
@@ -299,15 +282,15 @@ class Button:
                 if action == show_rules:
                     show_rules()
                 if action == show_menu:
-                    show_rules_time = False
+                    #show_rules_time = False
                     show_menu()
                 if action == restart:
                     restart()
                     start_game()
 
         else:
-            pygame.draw.rect(win, self.active_color, (x, y, self.width, self.heigth))
-        print_menu(message=message,x=x+40,y=y+10,font_size=font_size)
+            pygame.draw.rect(win, self.active_color, (x, y, self.width, self.heigth))#верхний левый угол, ширина и высота
+        print_menu(message=message,x=x+20,y=y+10,font_size=font_size)
 
 
 show_menu()
